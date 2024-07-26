@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "FitCare"
 include(":app")
- 
+include(":ui-layer")
+include(":domain-layer")
+include(":data-layer")
