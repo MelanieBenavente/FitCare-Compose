@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
 
+    //dagger-hilt / kapt
+    alias(libs.plugins.dagger.hilt.android)
+    id("kotlin-kapt")
+
 }
 
 android {
@@ -54,6 +58,12 @@ dependencies {
     //Module
     implementation(project(":domain-layer"))
 
+    //dagger-hilt
+    implementation(libs.dagger.hilt)
+    implementation(libs.dagger.hilt.android.compose)
+    implementation(libs.dagger.hilt.android.navigation)
+    kapt(libs.hilt.android.compiler)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -70,4 +80,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil)
+}
+kapt {
+    correctErrorTypes = true
 }
