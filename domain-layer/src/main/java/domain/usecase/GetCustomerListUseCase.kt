@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetCustomersUseCase @Inject constructor(private val repository: FitCareRepository){
+class GetCustomerListUseCase @Inject constructor(private val repository: FitCareRepository){
 
     fun getCustomerList(): Flow<List<Customer>> {
         return flow { emit(repository.getCustomerList()) }
