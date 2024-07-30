@@ -1,4 +1,4 @@
-package com.melaniadev.fitcare.ui_layer.ui.features.customer_detail
+package com.melaniadev.fitcare.ui_layer.ui.features.customer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
