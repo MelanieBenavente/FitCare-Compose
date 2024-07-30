@@ -11,12 +11,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.melaniadev.fitcare.ui_layer.ui.features.home.CustomerListScreen
-import com.melaniadev.fitcare.ui_layer.ui.features.customer_detail.DetailCustomerScreen
+import com.melaniadev.fitcare.ui_layer.ui.features.customer.DetailCustomerScreen
 
 enum class Routes {
     HOME, CUSTOMER_DETAIL
 }
-//test
 fun NavGraphBuilder.getNavGraph(navigationController: NavHostController) {
     composable(Routes.HOME.name) {
         CustomerListScreen(
@@ -28,10 +27,10 @@ fun NavGraphBuilder.getNavGraph(navigationController: NavHostController) {
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
-                    300, easing = LinearEasing
+                    100, easing = LinearEasing
                 )
             ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
+                animationSpec = tween(100, easing = EaseIn),
                 towards = AnimatedContentTransitionScope.SlideDirection.Start
             )
         },
