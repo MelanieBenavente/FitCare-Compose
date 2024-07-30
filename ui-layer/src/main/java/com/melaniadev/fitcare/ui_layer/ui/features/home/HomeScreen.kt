@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -53,7 +55,6 @@ import com.melaniadev.fitcare.ui_layer.ui.common.Routes
 import com.melaniadev.fitcare.ui_layer.ui.components.PersonalInfoComponent
 import com.melaniadev.fitcare.ui_layer.ui.components.SearchBarComponent
 import com.melaniadev.fitcare.ui_layer.ui.components.TopBarBackButton
-import com.melaniadev.fitcare.ui_layer.ui.mockList
 import com.melaniadev.fitcare.ui_layer.ui.theme.grayComponentsBackground
 import kotlin.math.roundToInt
 
@@ -70,6 +71,9 @@ private fun Preview() {
 fun CustomerListScreen(
     navigationController: NavHostController
 ) {
+    val viewModel = hiltViewModel<HomeViewModel>()
+    val uiState = viewModel.homeUiModel.collectAsState()
+    val customerList = uiState.value.customerList
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState()
     val isItemVisible = remember { mutableStateMapOf<Int, Boolean>() }
@@ -91,7 +95,7 @@ fun CustomerListScreen(
             )
         },
         content = { padding ->
-            val customerList = mockList()
+            customerList?.let {
             LazyColumn(
                 modifier = Modifier
                     .padding(padding)
@@ -109,16 +113,17 @@ fun CustomerListScreen(
                     }
                 }
 
-                itemsIndexed(customerList) { actualIndex, customer ->
-                    AnimatedItemListComponent(
-                        actualIndex,
-                        customer,
-                        customerList.size,
-                        isItemVisible,
-                        listState,
-                        animationFinishedHashMap,
-                        navigationController
-                    )
+                    itemsIndexed(it) { actualIndex, customer ->
+                        AnimatedItemListComponent(
+                            actualIndex,
+                            customer,
+                            it.size,
+                            isItemVisible,
+                            listState,
+                            animationFinishedHashMap,
+                            navigationController
+                        )
+                    }
                 }
             }
         })
@@ -172,7 +177,8 @@ private fun AnimatedItemListComponent(
         label = "offset",
         animationSpec = tween(
             durationMillis = 250,
-            easing = EaseOutCirc),
+            easing = EaseOutCirc
+        ),
         finishedListener = {
             animationFinishedHashMap[correctedIndex] = true
         })
@@ -186,7 +192,10 @@ private fun AnimatedItemListComponent(
 }
 
 @Composable
-private fun ItemCustomerComponent(customer: domain.model.Customer, navigationController: NavHostController) {
+private fun ItemCustomerComponent(
+    customer: domain.model.Customer,
+    navigationController: NavHostController
+) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
 
         .clickable { navigationController.navigate(Routes.CUSTOMER_DETAIL.name + "/${customer.name}") }

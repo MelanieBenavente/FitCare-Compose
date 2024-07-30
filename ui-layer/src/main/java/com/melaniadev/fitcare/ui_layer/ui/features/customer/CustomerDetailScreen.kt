@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -35,7 +37,6 @@ import com.melaniadev.fitcare.ui_layer.ui.components.ActionButtonsComponent
 import com.melaniadev.fitcare.ui_layer.ui.components.LeftIconInfoComponent
 import com.melaniadev.fitcare.ui_layer.ui.components.LeftImageInfoComponent
 import com.melaniadev.fitcare.ui_layer.ui.components.TopBarBackButton
-import com.melaniadev.fitcare.ui_layer.ui.mockList
 import com.melaniadev.fitcare.ui_layer.ui.theme.localCustomColorsPalette
 
 
@@ -50,8 +51,12 @@ private fun DetailPreview() {
 @Composable
 fun DetailCustomerScreen(navigationController: NavHostController, name: String) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    val mockedCustomer = mockList().filter { name == it.name }.firstOrNull()
+    val viewModel = hiltViewModel<CustomerViewModel>()
+    val uiState = viewModel.customerUiModel.collectAsState()
+    val customer = uiState.value.customer
+    if(customer == null){
+        viewModel.getCustomerDetail(name)
+    }
 
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         TopBarBackButton(
@@ -67,10 +72,10 @@ fun DetailCustomerScreen(navigationController: NavHostController, name: String) 
                 .verticalScroll(enabled = true, state = rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 15.dp)
         ) {
-            DetailScreenUserImage(customer = mockedCustomer)
-            InfoBioComponent(customer = mockedCustomer)
+            DetailScreenUserImage(customer = customer)
+            InfoBioComponent(customer = customer)
             ActionButtonsComponent(navigationController = navigationController)
-            mockedCustomer?.email?.let {
+            customer?.email?.let {
                 LeftIconInfoComponent(
                     iconDrawable = R.drawable.email_vector,
                     contentDescription = "Email",
@@ -78,7 +83,7 @@ fun DetailCustomerScreen(navigationController: NavHostController, name: String) 
                     body = it
                 )
             }
-            mockedCustomer?.phone?.let {
+            customer?.phone?.let {
                 LeftIconInfoComponent(
                     iconDrawable = R.drawable.phone_vector,
                     contentDescription = "Phone number",
@@ -86,8 +91,8 @@ fun DetailCustomerScreen(navigationController: NavHostController, name: String) 
                     body = it
                 )
             }
-            AssignedProfessionalComponent(customer = mockedCustomer)
-            VisitHistoryComponent(customer = mockedCustomer)
+            AssignedProfessionalComponent(customer = customer)
+            VisitHistoryComponent(customer = customer)
         }
     })
 }
@@ -95,7 +100,9 @@ fun DetailCustomerScreen(navigationController: NavHostController, name: String) 
 @Composable
 private fun DetailScreenUserImage(customer: domain.model.Customer?) {
     Box(
-        modifier = Modifier.padding(bottom = 15.dp).background(color = Color.Transparent)
+        modifier = Modifier
+            .padding(bottom = 15.dp)
+            .background(color = Color.Transparent)
     ) {
         AsyncImage(
             contentScale = ContentScale.Crop,
