@@ -1,5 +1,7 @@
-package com.melaniadev.fitcare
+package com.melaniadev.fitcare.dagger
 
-class Example {
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-}
+@HiltAndroidApp
+class DaggerHiltApplication : Application()
